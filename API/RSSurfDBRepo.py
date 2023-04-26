@@ -13,6 +13,8 @@ start = arrow.now().floor('day')
 # Get last hour of today
 end = start.shift(days=+1).floor('day')
 
+json_data = 0
+
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -23,6 +25,7 @@ db = mysql.connector.connect(
 cursor = db.cursor()
 
 cursor.execute("SHOW TABLES")
+
 
 def get_data():
     response = requests.get(
@@ -40,7 +43,11 @@ def get_data():
     )
     json_data = response.json()
     for hour in json_data['hours']:
-        cursor.execute("CALL insertWind(%s, %s, %s, %s)", (start, "Flager Beach", json_data['hours'][hour]['windDirection']['noaa'], json_data['hours'][hour]['windSpeed']['noaa']))
-        cursor.execute("CALL insertSwell(%s, %s, %s, %s, %s)", (start, "Flager Beach", json_data['hours'][hour]['waveHeight']['noaa'], json_data['hours'][hour]['waveDirection']['noaa'], json_data['hours'][hour]['wavePeriod']['noaa']))
+        cursor.execute("CALL insertWind(%s, %s, %s, %s)", (start, "Flager Beach",
+                       hour['windSpeed']['noaa'], hour['windDirection']['noaa']))
+        cursor.execute("CALL insertWave(%s, %s, %s, %s, %s)", (start, "Flager Beach",
+                       hour['waveHeight']['noaa'], hour['waveDirection']['noaa'], hour['wavePeriod']['noaa']))
 
 
+get_data()
+print(json_data)
