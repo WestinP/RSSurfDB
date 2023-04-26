@@ -28,8 +28,8 @@ def get_data():
     response = requests.get(
         'https://api.stormglass.io/v2/weather/point',
         params={
-            'lat': 58.7984,
-            'lng': 17.8081,
+            'lat': 29.4795,
+            'lng': -81.1237,
             'params': ','.join(['windSpeed', 'windDirection', 'waveHeight', 'waveDirection', 'wavePeriod']),
             'start': start.to('UTC'),  # Convert to UTC timestamp
             'end': start.to('UTC')  # Convert to UTC timestamp
