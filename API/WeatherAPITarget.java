@@ -9,14 +9,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class WeatherAPITarget {
-    public static void main(String[] args) throws Exception {
-        double lat = 58.7984;
-        double lng = 17.8081;
-        String params = "windSpeed,windDirection,waveHeight,waveDirection,wavePeriod";
-        Date start = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        String startString = sdf.format(start);
 
+    public double lat = 29.4791;
+    public double lng = -81.1231;
+    public String params = "windSpeed,windDirection,waveHeight,waveDirection,wavePeriod";
+    public Date start = new Date();
+    public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public String startString = sdf.format(start);
+
+    WeatherAPITarget() {
+    }
+
+    public void getWeather() throws Exception {
         URL url = new URL(
                 String.format(
                         "https://api.stormglass.io/v2/weather/point?lat=%f&lng=%f&params=%s&startString",
