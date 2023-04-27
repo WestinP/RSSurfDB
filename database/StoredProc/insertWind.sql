@@ -6,3 +6,4 @@ CREATE PROCEDURE insertWind(IN date DATE, IN location VARCHAR(50), IN direction 
 BEGIN
     INSERT INTO WindTable (TS, Name, Direction, Speed) VALUES (date, location, direction, speed);
 END //
+DELIMITER ;

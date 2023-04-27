@@ -72,7 +72,7 @@ CREATE TABLE WindTable(
 *     Going: BIT
 *     Direction: float
 *     FK Name: varchar(50)
-*****************************************/\
+*****************************************/
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='TideTable' AND xtype='U')
 CREATE TABLE TideTable(
     TS datetime,
