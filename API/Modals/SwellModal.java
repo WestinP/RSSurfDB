@@ -1,22 +1,24 @@
 package RSSurfDB.API.Modals;
 
+import java.sql.Date;
+
 public class SwellModal {
     /**********************************************
      * Create_SwellTable.sql
      * Scheme:
      * PK TS: datetime
-     * Height: float
-     * Direction: float
-     * Period: float
+     * Height: double
+     * Direction: double
+     * Period: double
      * FK Name: varchar(50)
      **********************************************/
-    public String TS;
-    public float Height;
-    public float Direction;
-    public float Period;
+    public Date TS;
+    public double Height;
+    public double Direction;
+    public double Period;
     public String Name;
 
-    public SwellModal(String TS, float Height, float Direction, float Period, String Name) {
+    public SwellModal(Date TS, double Height, double Direction, double Period, String Name) {
         this.TS = TS;
         this.Height = Height;
         this.Direction = Direction;

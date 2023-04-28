@@ -34,8 +34,8 @@ public class DataRepositiory {
         try {
             CallableStatement cs = conn.prepareCall("{call insertWind(?,?,?,?}");
             cs.setDate(1, wind.TS);
-            cs.setFloat(2, wind.Speed);
-            cs.setFloat(3, wind.Direction);
+            cs.setDouble(2, wind.Speed);
+            cs.setDouble(3, wind.Direction);
             cs.setString(4, wind.Name);
             cs.execute();
         } catch (SQLException e) {
@@ -46,10 +46,10 @@ public class DataRepositiory {
     public void insertSwell(SwellModal swell) {
         try {
             CallableStatement cs = conn.prepareCall("{call insertSwell(?,?,?,?,?}");
-            cs.setString(1, swell.TS);
-            cs.setFloat(2, swell.Height);
-            cs.setFloat(3, swell.Direction);
-            cs.setFloat(4, swell.Period);
+            cs.setDate(1, swell.TS);
+            cs.setDouble(2, swell.Height);
+            cs.setDouble(3, swell.Direction);
+            cs.setDouble(4, swell.Period);
             cs.setString(5, swell.Name);
             cs.execute();
         } catch (SQLException e) {
@@ -64,7 +64,7 @@ public class DataRepositiory {
             cs.setString(2, tide.DayLow);
             cs.setString(3, tide.DayHigh);
             cs.setBoolean(4, tide.Going);
-            cs.setFloat(5, tide.Direction);
+            cs.setDouble(5, tide.Direction);
             cs.setString(6, tide.Name);
             cs.execute();
         } catch (SQLException e) {
@@ -103,11 +103,11 @@ public class DataRepositiory {
             CallableStatement cs = conn.prepareCall("{call getWind(?,?,?,?)}");
             cs.setDate(1, day);
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.FLOAT);
-            cs.registerOutParameter(4, Types.FLOAT);
+            cs.registerOutParameter(3, Types.DOUBLE);
+            cs.registerOutParameter(4, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
-                wind.add(new WindModal(rs.getDate("TS"), rs.getFloat("Speed"), rs.getFloat("Direction"),
+                wind.add(new WindModal(rs.getDate("TS"), rs.getDouble("Speed"), rs.getDouble("Direction"),
                         rs.getString("Name")));
             }
         } catch (SQLException e) {
@@ -122,13 +122,13 @@ public class DataRepositiory {
             CallableStatement cs = conn.prepareCall("{call getSwell(?,?,?,?,?)}");
             cs.setDate(1, day);
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.FLOAT);
-            cs.registerOutParameter(4, Types.FLOAT);
-            cs.registerOutParameter(5, Types.FLOAT);
+            cs.registerOutParameter(3, Types.DOUBLE);
+            cs.registerOutParameter(4, Types.DOUBLE);
+            cs.registerOutParameter(5, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
-                swell.add(new SwellModal(rs.getString("TS"), rs.getFloat("Height"), rs.getFloat("Direction"),
-                        rs.getFloat("Period"), rs.getString("Name")));
+                swell.add(new SwellModal(rs.getDate("TS"), rs.getDouble("Height"), rs.getDouble("Direction"),
+                        rs.getDouble("Period"), rs.getString("Name")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -136,36 +136,37 @@ public class DataRepositiory {
         return swell;
     }
 
-    public ArrayList<TideModal> getTide(Date day, String locationName) {
-        ArrayList<TideModal> tide = new ArrayList<TideModal>();
-        try {
-            CallableStatement cs = conn.prepareCall("{call getTide(?,?,?,?,?,?)}");
-            cs.setDate(1, day);
-            cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.VARCHAR);
-            cs.registerOutParameter(4, Types.VARCHAR);
-            cs.registerOutParameter(5, Types.BOOLEAN);
-            cs.registerOutParameter(6, Types.FLOAT);
-            ResultSet rs = cs.executeQuery();
-            while (rs.next()) {
-                tide.add(new TideModal(rs.getString("TS"), rs.getString("DayLow"), rs.getString("DayHigh"),
-                        rs.getBoolean("Going"), rs.getFloat("Direction"), rs.getString("Name")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tide;
-    }
+    // public ArrayList<TideModal> getTide(Date day, String locationName) {
+    // ArrayList<TideModal> tide = new ArrayList<TideModal>();
+    // try {
+    // CallableStatement cs = conn.prepareCall("{call getTide(?,?,?,?,?,?)}");
+    // cs.setDate(1, day);
+    // cs.setString(2, locationName);
+    // cs.registerOutParameter(3, Types.VARCHAR);
+    // cs.registerOutParameter(4, Types.VARCHAR);
+    // cs.registerOutParameter(5, Types.BOOLEAN);
+    // cs.registerOutParameter(6, Types.DOUBLE);
+    // ResultSet rs = cs.executeQuery();
+    // while (rs.next()) {
+    // tide.add(new TideModal(rs.getString("TS"), rs.getString("DayLow"),
+    // rs.getString("DayHigh"),
+    // rs.getBoolean("Going"), rs.getDouble("Direction"), rs.getString("Name")));
+    // }
+    // } catch (SQLException e) {
+    // e.printStackTrace();
+    // }
+    // return tide;
+    // }
 
-    public Float getReview(Date day, String locationName) {
-        Float review;
+    public Double getReview(Date day, String locationName) {
+        Double review;
         try {
             CallableStatement cs = conn.prepareCall("{call getReview(?,?,?)}");
             cs.setDate(1, day);
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.FLOAT);
+            cs.registerOutParameter(3, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
-            review = rs.getFloat("Review");
+            review = rs.getDouble("Review");
         } catch (SQLException e) {
             e.printStackTrace();
             review = null;
@@ -173,15 +174,15 @@ public class DataRepositiory {
         return review;
     }
 
-    public Float getRating(Date day, String locationName) {
-        Float rating;
+    public Double getRating(Date day, String locationName) {
+        Double rating;
         try {
             CallableStatement cs = conn.prepareCall("{call getRating(?,?,?)}");
             cs.setDate(1, day);
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.FLOAT);
+            cs.registerOutParameter(3, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
-            rating = rs.getFloat("Rating");
+            rating = rs.getDouble("Rating");
         } catch (SQLException e) {
             e.printStackTrace();
             rating = null;
