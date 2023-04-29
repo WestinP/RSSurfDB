@@ -3,7 +3,7 @@
 *************************************************************/
 
 CREATE DATABASE IF NOT EXISTS RSSurfDB;
-use RSSurfDB;
+-- use RSSurfDB;
 
 /********************************************************
 -- Create_LocationTable
@@ -13,8 +13,8 @@ Scheme:
     PK TS: datetime
     CityName: varchar(50)
 ********************************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='LocationTable' AND xtype='U')
-CREATE TABLE LocationTable(
+-- IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='LocationTable' AND xtype='U')
+CREATE TABLE if not exists LocationTable(
     Name varchar(50),
     TS datetime,
     CityName varchar(50),
@@ -31,8 +31,7 @@ CREATE TABLE LocationTable(
 *     Period: float
 *     FK Name: varchar(50)
 **********************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='SwellTable' AND xtype='U')
-CREATE TABLE SwellTable(
+CREATE TABLE if not exists SwellTable(
     TS datetime,
     Name varchar(50),  -- FK to LocationTable
     Height float,
@@ -51,8 +50,7 @@ CREATE TABLE SwellTable(
 *     Direction: float
 *     FK Name: varchar(50)
 *******************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='WindTable' AND xtype='U')
-CREATE TABLE WindTable(
+CREATE TABLE if not exists WindTable(
     TS datetime,
     Speed float,
     Direction float,
@@ -73,8 +71,7 @@ CREATE TABLE WindTable(
 *     Direction: float
 *     FK Name: varchar(50)
 *****************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='TideTable' AND xtype='U')
-CREATE TABLE TideTable(
+CREATE TABLE if not exists TideTable(
     TS datetime,
     DayLow datetime,
     DayHigh datetime,
@@ -93,8 +90,7 @@ CREATE TABLE TideTable(
 *   UserRating: int
 *   PK Name: varchar(50)
 *****************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ReviewsTable' AND xtype='U')
-CREATE TABLE ReviewsTable(
+CREATE TABLE if not exists ReviewsTable(
     TS datetime,
     UserRating int,
     Name varchar(50),  -- FK to LocationTable
@@ -111,8 +107,7 @@ CREATE TABLE ReviewsTable(
 *   Rating: float
 *   PK Name: varchar(50)
 *****************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='RatingTable' AND xtype='U')
-CREATE TABLE RatingTable(
+CREATE TABLE if not exists RatingTable(
     TS datetime,
     Rating float,
     Name varchar(50),  -- FK to LocationTable

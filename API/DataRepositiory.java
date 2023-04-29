@@ -7,6 +7,7 @@
 
 package RSSurfDB.API;
 
+import java.time.LocalDateTime;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -33,10 +34,10 @@ public class DataRepositiory {
     public void insertWind(WindModal wind) {
         try {
             CallableStatement cs = conn.prepareCall("{call insertWind(?,?,?,?}");
-            cs.setDate(1, wind.TS);
-            cs.setDouble(2, wind.Speed);
-            cs.setDouble(3, wind.Direction);
-            cs.setString(4, wind.Name);
+            cs.setTime(1, Time.valueOf(wind.TS.toString()));
+            cs.setString(2, wind.Name);
+            cs.setDouble(3, wind.Speed);
+            cs.setDouble(4, wind.Direction);
             cs.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -46,31 +47,31 @@ public class DataRepositiory {
     public void insertSwell(SwellModal swell) {
         try {
             CallableStatement cs = conn.prepareCall("{call insertSwell(?,?,?,?,?}");
-            cs.setDate(1, swell.TS);
-            cs.setDouble(2, swell.Height);
-            cs.setDouble(3, swell.Direction);
-            cs.setDouble(4, swell.Period);
-            cs.setString(5, swell.Name);
+            cs.setTime(1, Time.valueOf(swell.TS.toString()));
+            cs.setString(2, swell.Name);
+            cs.setDouble(3, swell.Height);
+            cs.setDouble(4, swell.Direction);
+            cs.setDouble(5, swell.Period);
             cs.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void insertTide(TideModal tide) {
-        try {
-            CallableStatement cs = conn.prepareCall("{call insertTide(?,?,?,?,?,?}");
-            cs.setString(1, tide.TS);
-            cs.setString(2, tide.DayLow);
-            cs.setString(3, tide.DayHigh);
-            cs.setBoolean(4, tide.Going);
-            cs.setDouble(5, tide.Direction);
-            cs.setString(6, tide.Name);
-            cs.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    // public void insertTide(TideModal tide) {
+    // try {
+    // CallableStatement cs = conn.prepareCall("{call insertTide(?,?,?,?,?,?}");
+    // cs.setString(1, tide.TS);
+    // cs.setString(2, tide.DayLow);
+    // cs.setString(3, tide.DayHigh);
+    // cs.setBoolean(4, tide.Going);
+    // cs.setDouble(5, tide.Direction);
+    // cs.setString(6, tide.Name);
+    // cs.execute();
+    // } catch (SQLException e) {
+    // e.printStackTrace();
+    // }
+    // }
 
     public void insertRating(Date day, String locationName, int rating) {
         try {
@@ -107,7 +108,9 @@ public class DataRepositiory {
             cs.registerOutParameter(4, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
-                wind.add(new WindModal(rs.getDate("TS"), rs.getDouble("Speed"), rs.getDouble("Direction"),
+                Time time = rs.getTime("TS");
+                Timestamp ts = new Timestamp(time.getTime());
+                wind.add(new WindModal(ts.toLocalDateTime(), rs.getDouble("Speed"), rs.getDouble("Direction"),
                         rs.getString("Name")));
             }
         } catch (SQLException e) {
@@ -127,7 +130,10 @@ public class DataRepositiory {
             cs.registerOutParameter(5, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
-                swell.add(new SwellModal(rs.getDate("TS"), rs.getDouble("Height"), rs.getDouble("Direction"),
+                Time time = rs.getTime("TS");
+                Timestamp ts = new Timestamp(time.getTime());
+                swell.add(new SwellModal(ts.toLocalDateTime(), rs.getDouble("Height"),
+                        rs.getDouble("Direction"),
                         rs.getDouble("Period"), rs.getString("Name")));
             }
         } catch (SQLException e) {

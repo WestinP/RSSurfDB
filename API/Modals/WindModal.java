@@ -1,6 +1,6 @@
 package RSSurfDB.API.Modals;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 public class WindModal {
     /*******************************************
@@ -11,12 +11,12 @@ public class WindModal {
      * Direction: Double
      * FK Name: varchar(50)
      *******************************************/
-    public Date TS;
+    public LocalDateTime TS;
     public Double Speed;
     public Double Direction;
     public String Name;
 
-    public WindModal(Date TS, Double Speed, Double Direction, String Name) {
+    public WindModal(LocalDateTime TS, Double Speed, Double Direction, String Name) {
         this.TS = TS;
         this.Speed = Speed;
         this.Direction = Direction;
