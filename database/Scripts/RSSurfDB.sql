@@ -1,9 +1,9 @@
 /*************************************************************
 -- Create DataBase RSSurfDB only if it does not exist
 *************************************************************/
-
-CREATE DATABASE IF NOT EXISTS RSSurfDB;
-use RSSurfDB;
+drop database surf;
+CREATE DATABASE IF NOT EXISTS surf;
+ use surf;
 
 /********************************************************
 -- Create_LocationTable
@@ -13,8 +13,8 @@ Scheme:
     PK TS: datetime
     CityName: varchar(50)
 ********************************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='LocationTable' AND xtype='U')
-CREATE TABLE LocationTable(
+-- IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='LocationTable' AND xtype='U')
+CREATE TABLE if not exists LocationTable(
     Name varchar(50),
     TS datetime,
     CityName varchar(50),
@@ -26,18 +26,17 @@ CREATE TABLE LocationTable(
 * Create_SwellTable.sql
 * Scheme:
 *     PK TS: datetime
-*     Height: float
-*     Direction: float
-*     Period: float
+*     Height: double
+*     Direction: double
+*     Period: double
 *     FK Name: varchar(50)
 **********************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='SwellTable' AND xtype='U')
-CREATE TABLE SwellTable(
+CREATE TABLE if not exists SwellTable(
     TS datetime,
     Name varchar(50),  -- FK to LocationTable
-    Height float,
-    Direction float,
-    Period float,
+    Height double,
+    Direction double,
+    Period double,
     PRIMARY KEY (TS),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)
 );
@@ -47,15 +46,14 @@ CREATE TABLE SwellTable(
 * Create_WindTable.sql
 * Scheme:
 *     PK TS: datetime
-*     Speed: float
-*     Direction: float
+*     Speed: double
+*     Direction: double
 *     FK Name: varchar(50)
 *******************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='WindTable' AND xtype='U')
-CREATE TABLE WindTable(
+CREATE TABLE if not exists WindTable(
     TS datetime,
-    Speed float,
-    Direction float,
+    Speed double,
+    Direction double,
     Name varchar(50),  -- FK to LocationTable
     PRIMARY KEY (TS),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)
@@ -70,16 +68,15 @@ CREATE TABLE WindTable(
 *     DayLow: datetime
 *     DayHigh: datetime
 *     Going: BIT
-*     Direction: float
+*     Direction: double
 *     FK Name: varchar(50)
-*****************************************/\
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='TideTable' AND xtype='U')
-CREATE TABLE TideTable(
+*****************************************/
+CREATE TABLE if not exists TideTable(
     TS datetime,
     DayLow datetime,
     DayHigh datetime,
     Going BIT,
-    Direction float,
+    Direction double,
     Name varchar(50),  -- FK to LocationTable
     PRIMARY KEY (TS),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)
@@ -93,8 +90,7 @@ CREATE TABLE TideTable(
 *   UserRating: int
 *   PK Name: varchar(50)
 *****************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ReviewsTable' AND xtype='U')
-CREATE TABLE ReviewsTable(
+CREATE TABLE if not exists ReviewsTable(
     TS datetime,
     UserRating int,
     Name varchar(50),  -- FK to LocationTable
@@ -108,13 +104,12 @@ CREATE TABLE ReviewsTable(
 * Create_RatingTable.sql
 * Scheme:
 *   PK Ts: datetime
-*   Rating: float
+*   Rating: double
 *   PK Name: varchar(50)
 *****************************************/
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='RatingTable' AND xtype='U')
-CREATE TABLE RatingTable(
+CREATE TABLE if not exists RatingTable(
     TS datetime,
-    Rating float,
+    Rating double,
     Name varchar(50),  -- FK to LocationTable
     PRIMARY KEY (TS, Name),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)

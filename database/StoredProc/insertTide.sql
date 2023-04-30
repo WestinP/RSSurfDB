@@ -6,3 +6,4 @@ CREATE PROCEDURE insertTide(IN date DATE, IN location VARCHAR(50), IN height INT
 BEGIN
     INSERT INTO TideTable (TS, Name, Height, Direction) VALUES (date, location, height, direction);
 END //
+DELIMITER ;
