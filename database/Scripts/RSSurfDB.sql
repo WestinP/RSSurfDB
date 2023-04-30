@@ -1,9 +1,9 @@
 /*************************************************************
 -- Create DataBase RSSurfDB only if it does not exist
 *************************************************************/
-
-CREATE DATABASE IF NOT EXISTS RSSurfDB;
--- use RSSurfDB;
+drop database surf;
+CREATE DATABASE IF NOT EXISTS surf;
+ use surf;
 
 /********************************************************
 -- Create_LocationTable
@@ -26,17 +26,17 @@ CREATE TABLE if not exists LocationTable(
 * Create_SwellTable.sql
 * Scheme:
 *     PK TS: datetime
-*     Height: float
-*     Direction: float
-*     Period: float
+*     Height: double
+*     Direction: double
+*     Period: double
 *     FK Name: varchar(50)
 **********************************************/
 CREATE TABLE if not exists SwellTable(
     TS datetime,
     Name varchar(50),  -- FK to LocationTable
-    Height float,
-    Direction float,
-    Period float,
+    Height double,
+    Direction double,
+    Period double,
     PRIMARY KEY (TS),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)
 );
@@ -46,14 +46,14 @@ CREATE TABLE if not exists SwellTable(
 * Create_WindTable.sql
 * Scheme:
 *     PK TS: datetime
-*     Speed: float
-*     Direction: float
+*     Speed: double
+*     Direction: double
 *     FK Name: varchar(50)
 *******************************************/
 CREATE TABLE if not exists WindTable(
     TS datetime,
-    Speed float,
-    Direction float,
+    Speed double,
+    Direction double,
     Name varchar(50),  -- FK to LocationTable
     PRIMARY KEY (TS),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)
@@ -68,7 +68,7 @@ CREATE TABLE if not exists WindTable(
 *     DayLow: datetime
 *     DayHigh: datetime
 *     Going: BIT
-*     Direction: float
+*     Direction: double
 *     FK Name: varchar(50)
 *****************************************/
 CREATE TABLE if not exists TideTable(
@@ -76,7 +76,7 @@ CREATE TABLE if not exists TideTable(
     DayLow datetime,
     DayHigh datetime,
     Going BIT,
-    Direction float,
+    Direction double,
     Name varchar(50),  -- FK to LocationTable
     PRIMARY KEY (TS),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)
@@ -104,12 +104,12 @@ CREATE TABLE if not exists ReviewsTable(
 * Create_RatingTable.sql
 * Scheme:
 *   PK Ts: datetime
-*   Rating: float
+*   Rating: double
 *   PK Name: varchar(50)
 *****************************************/
 CREATE TABLE if not exists RatingTable(
     TS datetime,
-    Rating float,
+    Rating double,
     Name varchar(50),  -- FK to LocationTable
     PRIMARY KEY (TS, Name),
     FOREIGN KEY (Name) REFERENCES LocationTable(Name)

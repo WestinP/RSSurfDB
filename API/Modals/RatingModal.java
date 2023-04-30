@@ -1,19 +1,21 @@
 package RSSurfDB.API.Modals;
 
+import java.time.LocalDateTime;
+
 public class RatingModal {
     /*****************************************
      * Create_RatingTable.sql
      * Scheme:
      * PK Ts: datetime
-     * Rating: float
+     * Rating: Integer
      * PK Name: varchar(50)
      *****************************************/
-    public String Ts;
-    public float Rating;
+    public LocalDateTime TS;
+    public Integer Rating;
     public String Name;
 
-    public RatingModal(String Ts, float Rating, String Name) {
-        this.Ts = Ts;
+    public RatingModal(LocalDateTime TS, Integer Rating, String Name) {
+        this.TS = TS;
         this.Rating = Rating;
         this.Name = Name;
     }

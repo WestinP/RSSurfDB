@@ -1,6 +1,6 @@
 -- Insert Swell Data
 
-USE RSSurfDB;
+USE surf;
 DELIMITER //
 CREATE or replace procedure insertSwell(IN date DATE, IN location VARCHAR(50), IN height INT, IN direction INT, IN period INT)
 BEGIN

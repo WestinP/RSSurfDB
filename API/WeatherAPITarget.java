@@ -7,6 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import javax.xml.crypto.Data;
+
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
@@ -28,6 +31,13 @@ public class WeatherAPITarget {
         WeatherAPITarget weatherAPITarget = new WeatherAPITarget();
         weatherAPITarget.getWeather();
         weatherAPITarget.print();
+        weatherAPITarget.insert();
+
+        // dataRepositiory
+        // .insertWind(new WindModal(LocalDateTime.now(), 10.0, 10.0, "Flagler Beach"));
+        // dataRepositiory
+        // .insertSwell(new SwellModal(LocalDateTime.now().plusHours(1), 10.0, 10.0,
+        // 10.0, "Flagler Beach"));
     }
 
     public void getWeather() throws Exception {

@@ -11,20 +11,22 @@ import java.time.LocalDateTime;
 import java.sql.*;
 import java.util.ArrayList;
 
+import RSSurfDB.API.Modals.RatingModal;
+import RSSurfDB.API.Modals.ReviewModal;
 import RSSurfDB.API.Modals.SwellModal;
-import RSSurfDB.API.Modals.TideModal;
 import RSSurfDB.API.Modals.WindModal;
 
 public class DataRepositiory {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/RSSurfDB";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/surf";
     private static final String USER = "root";
-    private static final String PASS = "root";
+    private static final String PASS = "password";
 
     Connection conn;
 
     public DataRepositiory() {
         try {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("Connected to database");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -32,9 +34,10 @@ public class DataRepositiory {
 
     // Insertion Functions
     public void insertWind(WindModal wind) {
+        System.out.println(wind.TS.toString());
         try {
-            CallableStatement cs = conn.prepareCall("{call insertWind(?,?,?,?}");
-            cs.setTime(1, Time.valueOf(wind.TS.toString()));
+            CallableStatement cs = conn.prepareCall("{call surf.insertWind(?,?,?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(wind.TS));
             cs.setString(2, wind.Name);
             cs.setDouble(3, wind.Speed);
             cs.setDouble(4, wind.Direction);
@@ -46,8 +49,8 @@ public class DataRepositiory {
 
     public void insertSwell(SwellModal swell) {
         try {
-            CallableStatement cs = conn.prepareCall("{call insertSwell(?,?,?,?,?}");
-            cs.setTime(1, Time.valueOf(swell.TS.toString()));
+            CallableStatement cs = conn.prepareCall("{call surf.insertSwell(?,?,?,?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(swell.TS));
             cs.setString(2, swell.Name);
             cs.setDouble(3, swell.Height);
             cs.setDouble(4, swell.Direction);
@@ -73,24 +76,24 @@ public class DataRepositiory {
     // }
     // }
 
-    public void insertRating(Date day, String locationName, int rating) {
+    public void insertRating(RatingModal rating) {
         try {
-            CallableStatement cs = conn.prepareCall("{call insertRating(?,?,?}");
-            cs.setDate(1, day);
-            cs.setString(1, locationName);
-            cs.setInt(2, rating);
+            CallableStatement cs = conn.prepareCall("{call surf.insertRating(?,?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(rating.TS));
+            cs.setString(2, rating.Name);
+            cs.setInt(3, rating.Rating);
             cs.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void insertReview(Date day, String locationName, int review) {
+    public void insertReview(ReviewModal review) {
         try {
-            CallableStatement cs = conn.prepareCall("{call insertReview(?,?,?}");
-            cs.setDate(1, day);
-            cs.setString(1, locationName);
-            cs.setInt(2, review);
+            CallableStatement cs = conn.prepareCall("{call surf.insertReview(?,?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(review.TS));
+            cs.setString(2, review.Name);
+            cs.setInt(3, review.UserRating);
             cs.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,20 +101,18 @@ public class DataRepositiory {
     }
 
     // Get Functions
-    public ArrayList<WindModal> getWind(Date day, String locationName) {
+    public ArrayList<WindModal> getWindByDate(LocalDateTime dayTime, String locationName) {
         ArrayList<WindModal> wind = new ArrayList<WindModal>();
         try {
-            CallableStatement cs = conn.prepareCall("{call getWind(?,?,?,?)}");
-            cs.setDate(1, day);
+            CallableStatement cs = conn.prepareCall("{call surf.getWindByDate(?,?,?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(dayTime));
             cs.setString(2, locationName);
             cs.registerOutParameter(3, Types.DOUBLE);
             cs.registerOutParameter(4, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
-                Time time = rs.getTime("TS");
-                Timestamp ts = new Timestamp(time.getTime());
-                wind.add(new WindModal(ts.toLocalDateTime(), rs.getDouble("Speed"), rs.getDouble("Direction"),
-                        rs.getString("Name")));
+                wind.add(new WindModal(rs.getTimestamp("TS").toLocalDateTime(),
+                        rs.getDouble("Speed"), rs.getDouble("Direction"), locationName));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -119,22 +120,19 @@ public class DataRepositiory {
         return wind;
     }
 
-    public ArrayList<SwellModal> getSwell(Date day, String locationName) {
+    public ArrayList<SwellModal> getSwellByDate(LocalDateTime dayTime, String locationName) {
         ArrayList<SwellModal> swell = new ArrayList<SwellModal>();
         try {
-            CallableStatement cs = conn.prepareCall("{call getSwell(?,?,?,?,?)}");
-            cs.setDate(1, day);
+            CallableStatement cs = conn.prepareCall("{call surf.getSwellByDate(?,?,?,?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(dayTime));
             cs.setString(2, locationName);
             cs.registerOutParameter(3, Types.DOUBLE);
             cs.registerOutParameter(4, Types.DOUBLE);
             cs.registerOutParameter(5, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
-                Time time = rs.getTime("TS");
-                Timestamp ts = new Timestamp(time.getTime());
-                swell.add(new SwellModal(ts.toLocalDateTime(), rs.getDouble("Height"),
-                        rs.getDouble("Direction"),
-                        rs.getDouble("Period"), rs.getString("Name")));
+                swell.add(new SwellModal(rs.getTimestamp("TS").toLocalDateTime(),
+                        rs.getDouble("Height"), rs.getDouble("Direction"), rs.getDouble("Period"), locationName));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,35 +140,13 @@ public class DataRepositiory {
         return swell;
     }
 
-    // public ArrayList<TideModal> getTide(Date day, String locationName) {
-    // ArrayList<TideModal> tide = new ArrayList<TideModal>();
-    // try {
-    // CallableStatement cs = conn.prepareCall("{call getTide(?,?,?,?,?,?)}");
-    // cs.setDate(1, day);
-    // cs.setString(2, locationName);
-    // cs.registerOutParameter(3, Types.VARCHAR);
-    // cs.registerOutParameter(4, Types.VARCHAR);
-    // cs.registerOutParameter(5, Types.BOOLEAN);
-    // cs.registerOutParameter(6, Types.DOUBLE);
-    // ResultSet rs = cs.executeQuery();
-    // while (rs.next()) {
-    // tide.add(new TideModal(rs.getString("TS"), rs.getString("DayLow"),
-    // rs.getString("DayHigh"),
-    // rs.getBoolean("Going"), rs.getDouble("Direction"), rs.getString("Name")));
-    // }
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-    // return tide;
-    // }
-
     public Double getReview(Date day, String locationName) {
         Double review;
         try {
             CallableStatement cs = conn.prepareCall("{call getReview(?,?,?)}");
             cs.setDate(1, day);
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.DOUBLE);
+            cs.registerOutParameter(3, Types.INTEGER);
             ResultSet rs = cs.executeQuery();
             review = rs.getDouble("Review");
         } catch (SQLException e) {
@@ -186,7 +162,7 @@ public class DataRepositiory {
             CallableStatement cs = conn.prepareCall("{call getRating(?,?,?)}");
             cs.setDate(1, day);
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.DOUBLE);
+            cs.registerOutParameter(3, Types.INTEGER);
             ResultSet rs = cs.executeQuery();
             rating = rs.getDouble("Rating");
         } catch (SQLException e) {
