@@ -7,6 +7,7 @@
 
 package RSSurfDB.API;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,12 +18,14 @@ import RSSurfDB.API.Modals.SwellModal;
 import RSSurfDB.API.Modals.WindModal;
 
 public class DataRepositiory {
+    // ! Database Credentials
     private static final String DB_URL = "jdbc:mysql://localhost:3306/surf";
     private static final String USER = "root";
     private static final String PASS = "password";
 
     Connection conn;
 
+    // ! all the methods will be called from here for database access
     public DataRepositiory() {
         try {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -104,11 +107,11 @@ public class DataRepositiory {
     public ArrayList<WindModal> getWindByDate(LocalDateTime dayTime, String locationName) {
         ArrayList<WindModal> wind = new ArrayList<WindModal>();
         try {
-            CallableStatement cs = conn.prepareCall("{call surf.getWindByDate(?,?,?,?)}");
+            CallableStatement cs = conn.prepareCall("{call surf.getWindByDateLoc(?,?)}");
             cs.setTimestamp(1, Timestamp.valueOf(dayTime));
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.DOUBLE);
-            cs.registerOutParameter(4, Types.DOUBLE);
+            // cs.registerOutParameter(3, Types.DOUBLE);
+            // cs.registerOutParameter(4, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
                 wind.add(new WindModal(rs.getTimestamp("TS").toLocalDateTime(),
@@ -123,12 +126,12 @@ public class DataRepositiory {
     public ArrayList<SwellModal> getSwellByDate(LocalDateTime dayTime, String locationName) {
         ArrayList<SwellModal> swell = new ArrayList<SwellModal>();
         try {
-            CallableStatement cs = conn.prepareCall("{call surf.getSwellByDate(?,?,?,?,?)}");
+            CallableStatement cs = conn.prepareCall("{call surf.getSwellByDateLoc(?,?)}");
             cs.setTimestamp(1, Timestamp.valueOf(dayTime));
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.DOUBLE);
-            cs.registerOutParameter(4, Types.DOUBLE);
-            cs.registerOutParameter(5, Types.DOUBLE);
+            // cs.registerOutParameter(3, Types.DOUBLE);
+            // cs.registerOutParameter(4, Types.DOUBLE);
+            // cs.registerOutParameter(5, Types.DOUBLE);
             ResultSet rs = cs.executeQuery();
             while (rs.next()) {
                 swell.add(new SwellModal(rs.getTimestamp("TS").toLocalDateTime(),
@@ -140,15 +143,16 @@ public class DataRepositiory {
         return swell;
     }
 
-    public Double getReview(Date day, String locationName) {
+    public Double getReview(LocalDateTime day, String locationName) {
         Double review;
         try {
-            CallableStatement cs = conn.prepareCall("{call getReview(?,?,?)}");
-            cs.setDate(1, day);
+            CallableStatement cs = conn.prepareCall("{call surf.getReviewsByDateLoc(?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(day));
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.INTEGER);
+            // cs.registerOutParameter(3, Types.INTEGER);
             ResultSet rs = cs.executeQuery();
-            review = rs.getDouble("Review");
+            rs.next();
+            review = rs.getDouble("UserRating");
         } catch (SQLException e) {
             e.printStackTrace();
             review = null;
@@ -156,14 +160,15 @@ public class DataRepositiory {
         return review;
     }
 
-    public Double getRating(Date day, String locationName) {
+    public Double getRating(LocalDateTime day, String locationName) {
         Double rating;
         try {
-            CallableStatement cs = conn.prepareCall("{call getRating(?,?,?)}");
-            cs.setDate(1, day);
+            CallableStatement cs = conn.prepareCall("{call surf.getRatingByDateLoc(?,?)}");
+            cs.setTimestamp(1, Timestamp.valueOf(day));
             cs.setString(2, locationName);
-            cs.registerOutParameter(3, Types.INTEGER);
+            // cs.registerOutParameter(3, Types.INTEGER);
             ResultSet rs = cs.executeQuery();
+            rs.next();
             rating = rs.getDouble("Rating");
         } catch (SQLException e) {
             e.printStackTrace();
